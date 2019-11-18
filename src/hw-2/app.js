@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import withData from './withData';
+import withData from './with-data';
 
 import PostList from './post-list';
 

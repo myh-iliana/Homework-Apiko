@@ -21,28 +21,29 @@ const PostList = ({ posts, defaultLimit }) => {
 
   const filteredPosts = posts.filter(post => (post.title.search(regexp) || post.body.search(regexp)) !== -1);
 
+  const visiblePosts = filteredPosts.map((post, i) => {
+    if (i < limit) {
+      return(
+          <li key={ post.id } className='list-group-item'>
+            <PostListItem post={ post } />
+          </li>
+      );
+    }
+    return null;
+  });
+
   return (
       <Fragment>
         <Input onSearch={ onSearch } />
         <ul className='list-group'>
-          {
-            filteredPosts.map((post, i) => {
-              if (i < limit) {
-                return(
-                    <li key={ post.id } className='list-group-item'>
-                      <PostListItem post={ post } />
-                    </li>
-                );
-              }
-              return null;
-            })
-
-          }
+          { visiblePosts }
         </ul>
 
-        { filteredPosts.length >= limit
+        {
+          visiblePosts.length >= limit
             ? <MoreButton onLoadMorePosts={ onLoadMorePosts } />
-            : <h4 className="text-center">End</h4> }
+            : <h4 className="text-center">End</h4>
+        }
       </Fragment>
   );
 };

@@ -10,7 +10,8 @@ const Input = ({ onSearch }) => {
 
   return (
       <div className='input-group input-group-lg fixed-top'>
-        <input className='form-control' type='text' placeholder='Search' value={text}
+        <input className='form-control' type='text' placeholder='Search'
+               value={text}
                onChange={ handleChange }
         />
       </div>
