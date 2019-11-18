@@ -19,7 +19,9 @@ const PostList = ({ posts, defaultLimit }) => {
 
   const regexp = new RegExp(search, 'ig');
 
-  const filteredPosts = posts.filter(post => (post.title.search(regexp) || post.body.search(regexp)) !== -1);
+  const filteredPosts = posts.filter(post =>
+      (post.title.search(regexp) || post.body.search(regexp)) !== -1
+  );
 
   const visiblePosts = filteredPosts.map((post, i) => {
     if (i < limit) {
