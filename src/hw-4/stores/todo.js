@@ -1,16 +1,13 @@
 import { types as t } from 'mobx-state-tree';
 import uuid from 'uuid';
 
-function log(obj) {
-  return console.log(JSON.stringify(obj, null, 2));
-}
-
-const TodoModel = t
+export const TodoModel = t
     .model('TodoModel', {
-      id: t.string,
+      id: t.identifier,
       text: t.string,
       isCompleted: t.optional(t.boolean, false),
       isImportant: t.optional(t.boolean, false),
+      groupId: t.optional(t.string, ''),
     })
     .actions(store => ({
       toggleCompleted() {
@@ -21,26 +18,60 @@ const TodoModel = t
         store.isImportant = !store.isImportant;
       }
     }));
-// t.optional(t.array(TodoModel), [])
+
 export const TodoListModel = t
     .model('TodoListModel', {
       list: t.optional(t.array(TodoModel), [])
     })
+    .views(store => ({
+      get allTodos() {
+        return store.list;
+      },
+
+      get importantTodos() {
+        return store.list.filter(item => item.isImportant);
+      },
+
+      get importantTodosLength() {
+        return store.list.filter(item => item.isImportant).length;
+      },
+
+      get completedTodos() {
+        return store.list.filter(item => item.isCompleted);
+      },
+
+      get completedTodosLength() {
+        return store.list.filter(item => item.isCompleted).length;
+      },
+
+      get activeTodos() {
+        return store.list.filter(item => !item.isCompleted);
+      },
+
+      get activeTodosLength() {
+        return store.list.filter(item => !item.isCompleted).length;
+      },
+
+      groupTodos(groupId) {
+        return store.list.filter(todo => todo.groupId === groupId);
+      },
+
+      groupTodosLength(groupId) {
+        return store.list.filter(todo => todo.groupId === groupId).length;
+      }
+    }))
     .actions(store => ({
-      add(text) {
+      add(text, groupId) {
         const todo = {
           id: uuid(),
-          text
+          text,
+          groupId
         };
 
         store.list.push(todo);
+      },
+
+      delete(id) {
+        store.list = store.list.filter(item => item.id !== id);
       }
     }));
-
-// const todoList = TodoListModel.create({
-//     id: uuid(),
-//     text: 'action'
-// });
-//
-// todoList.add('from action');
-// log(todoList);

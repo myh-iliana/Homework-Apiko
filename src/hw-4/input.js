@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 
-const Input = ({ onAdd }) => {
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+
+const Input = ({ add, ...props }) => {
   const [value, setValue] = useState('');
 
   const onChange = e => setValue(e.target.value);
@@ -9,14 +12,20 @@ const Input = ({ onAdd }) => {
     e.preventDefault();
 
     if (value !== '') {
-      onAdd(value);
+      add(value);
       setValue('');
     }
   };
 
   return (
-      <form onSubmit={ onSubmit }>
-        <input type='text' className='form-control' value={ value } onChange={ onChange }/>
+      <form onSubmit={ onSubmit } className='d-flex align-items-center'>
+        <FontAwesomeIcon icon={ faPlus }/>
+        <input type='text'
+               className='form-control no-outline'
+               value={ value }
+               onChange={ onChange }
+               { ...props }
+        />
       </form>
   );
 };

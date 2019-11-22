@@ -1,20 +1,20 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { observer } from 'mobx-react';
+import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
+
 import Header from './header';
-import TodoList from './todo-list';
-import Sidebar from './sidebar';
+import Body from './body';
+
+import './styles.css';
 
 const App = () => {
   return (
       <Router>
         <Header />
-        <div className='d-flex justify-content-start' style={{margin: '2rem 0'}}>
-          <Sidebar />
-          <TodoList />
-        </div>
+
+        <Route exact path='/' render={() => <Redirect to='/groups' />} />
+        <Body />
       </Router>
   );
 };
 
-export default observer(App);
+export default App;

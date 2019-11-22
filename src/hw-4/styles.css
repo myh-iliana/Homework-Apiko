@@ -1,0 +1,53 @@
+.body {
+    margin: 2rem 0;
+}
+
+.navigation {
+    width: 30vw;
+}
+
+.navigation-item-link {
+    width: 30vw;
+    text-decoration: none;
+}
+
+.list {
+    margin: 0 3rem;
+    width: 70vw;
+}
+
+.important-icon {
+    cursor: pointer;
+}
+
+.completed {
+    text-decoration: line-through;
+}
+
+.no-outline {
+    border: none;
+}
+
+.no-outline:focus {
+    box-shadow: none;
+}
+
+.delete-trash {
+    position: absolute;
+    left: 31vw;
+    cursor: pointer;
+}
+
+.delete-trash:hover {
+    color: red;
+}
+
+.delete-todo-trash {
+    margin-left: 1rem;
+    left: 31vw;
+    cursor: pointer;
+}
+
+.delete-todo-trash:hover {
+    color: red;
+}
