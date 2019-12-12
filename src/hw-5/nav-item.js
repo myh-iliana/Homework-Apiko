@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-import store from './stores/root';
+import store from './stores/rootStore';
 
 const NavItem = ({ children, title, id }) => {
   const history = useHistory();

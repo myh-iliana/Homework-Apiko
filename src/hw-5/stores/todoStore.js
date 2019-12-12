@@ -1,27 +1,48 @@
-import { types as t } from 'mobx-state-tree';
+import {flow, types as t} from 'mobx-state-tree';
 import uuid from 'uuid';
+import Api from '../api';
 
 export const TodoModel = t
     .model('TodoModel', {
       id: t.identifier,
-      text: t.string,
+      text: t.maybe(t.string),
       isCompleted: t.optional(t.boolean, false),
       isImportant: t.optional(t.boolean, false),
-      groupId: t.optional(t.string, ''),
+      groupId: t.maybe(t.string)
     })
     .actions(store => ({
-      toggleCompleted() {
+      toggleCompleted: flow(function* toggleCompleted() {
+        const oldValue = store.isCompleted;
         store.isCompleted = !store.isCompleted;
-      },
 
-      toggleImportant() {
+        try {
+          yield Api.Todos.update(store.id,{ isCompleted: store.isCompleted });
+          console.log('success');
+        } catch (err) {
+          console.log(err);
+          store.isCompleted = oldValue;
+        }
+      }),
+
+      toggleImportant: flow(function* toggleImportant() {
+        const oldValue = store.isImportant;
         store.isImportant = !store.isImportant;
-      }
+
+        try {
+          yield Api.Todos.update(store.id, { isImportant: store.isImportant });
+          console.log('success');
+        } catch (err) {
+          console.log(err);
+          store.isImportant = oldValue;
+        }
+      })
     }));
 
 export const TodoListModel = t
     .model('TodoListModel', {
-      list: t.optional(t.array(TodoModel), [])
+      list: t.optional(t.array(TodoModel), []),
+      loading: false,
+      error: false
     })
     .views(store => ({
       get allTodos() {
@@ -77,5 +98,17 @@ export const TodoListModel = t
 
       deleteGroupTodos(groupId) {
         store.list = store.list.filter(item => item.groupId !== groupId);
-      }
+      },
+
+      getTodos: flow(function* getTodos() {
+        store.loading = true;
+        try {
+          store.list = yield Api.Todos.getAll();
+        } catch (err) {
+          store.error = true;
+          console.log(err);
+        } finally {
+          store.loading = false;
+        }
+      })
     }));

@@ -6,7 +6,7 @@ import { observer } from 'mobx-react';
 import TodoListItem from './todo-list-item';
 import Input from './input';
 
-import store from './stores/root';
+import store from './stores/rootStore';
 
 const TodoList = () => {
   const { id: groupId } = useParams();
@@ -40,7 +40,6 @@ const TodoList = () => {
       <div className='list'>
         {
           todos.map(todo => {
-            console.log('render todoListItem');
             return <TodoListItem key={todo.id} {...{todo}}/>
           })
         }
