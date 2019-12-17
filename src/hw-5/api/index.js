@@ -82,7 +82,6 @@ function Group(data) {
   return {
     id: data.id,
     title: data.title,
-    todos: data.todos || [],
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   };
@@ -391,8 +390,9 @@ async function removeGroups(options, cache) {
 
 async function removeGroup(id, options, cache) {
   const newGroups = cache.groups.filter((todo) => todo.id !== id);
+  const newTodos = cache.todos.filter(todo => todo.groupId !== id);
 
-  await saveCache({ ...cache, groups: newGroups });
+  await saveCache({ ...cache, groups: newGroups, todos: newTodos });
 
   return { success: true };
 }

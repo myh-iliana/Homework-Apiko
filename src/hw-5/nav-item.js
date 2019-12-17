@@ -17,8 +17,7 @@ const NavItem = ({ children, title, id }) => {
   }, [id]);
 
   const onDelete = () => {
-    store.groups.delete(id);
-    store.todos.deleteGroupTodos(id);
+    store.groups.deleteGroup(id);
   };
 
   return (

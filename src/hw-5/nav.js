@@ -5,11 +5,13 @@ import { observer } from 'mobx-react';
 import NavItem from './nav-item';
 import StaticNav from './static-nav';
 import Input from './input';
+import Loader from './loader';
 
 import store from './stores/rootStore';
 
 const Nav = () => {
   const groups = values(store.groups.allGroups);
+  const loading = store.groups.loading;
 
   const addGroup = value => {
     store.groups.add(value);
@@ -19,11 +21,13 @@ const Nav = () => {
       <nav className="nav flex-column d-inline-flex navigation">
         <StaticNav />
         {
-          groups.map(({ id, title }) => {
-            return (
-                <NavItem key={ id } {...{ id, title }}>{ title }</NavItem>
-            );
-          })
+          loading
+              ? <Loader />
+              : groups.map(({ id, title }) => {
+                return (
+                    <NavItem key={ id } {...{ id, title }}>{ title }</NavItem>
+                );
+              })
         }
         <Input add={ addGroup } placeholder='New group' />
       </nav>

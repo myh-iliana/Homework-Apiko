@@ -12,7 +12,7 @@ const TodoListItem = ({ todo }) => {
 
   const onCompleted = () => toggleCompleted();
   const onImportant = () => toggleImportant();
-  const onDelete = () => store.todos.delete(id);
+  const onDelete = () => store.todos.deleteTodo(id);
 
   const style = isCompleted ? 'completed' : 'important-icon';
 

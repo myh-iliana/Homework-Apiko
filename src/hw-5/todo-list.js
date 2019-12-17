@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 
 import TodoListItem from './todo-list-item';
 import Input from './input';
+import Loader from './loader';
 
 import store from './stores/rootStore';
 
@@ -13,6 +14,7 @@ const TodoList = () => {
   const matchActive = useRouteMatch('/groups/active');
   const matchDone = useRouteMatch('/groups/done');
   const matchImportant = useRouteMatch('/groups/important');
+  const isLoading = store.todos.loading;
 
   let todos = values(store.todos.allTodos);
 
@@ -39,9 +41,11 @@ const TodoList = () => {
   return (
       <div className='list'>
         {
-          todos.map(todo => {
-            return <TodoListItem key={todo.id} {...{todo}}/>
-          })
+          isLoading
+              ? <Loader />
+              : todos.map(todo => {
+                return <TodoListItem key={todo.id} {...{todo}}/>
+              })
         }
         <Input add={ addTodo } placeholder='Add task' />
       </div>

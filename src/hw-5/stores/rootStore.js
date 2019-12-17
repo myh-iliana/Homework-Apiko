@@ -16,10 +16,8 @@ const rootStore = RootStore.create({});
 
 onSnapshot(rootStore, snapshot => console.log(JSON.stringify(snapshot, null, 2)));
 
-rootStore.todos.getTodos().then(() => {
-  console.log('root success');
-  // rootStore.todos.list[0].toggleImportant();
-});
+rootStore.todos.getTodos();
+rootStore.groups.getGroups();
 
 // rootStore.todos.add('Thor');
 //

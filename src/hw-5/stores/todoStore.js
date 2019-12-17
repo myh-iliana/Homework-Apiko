@@ -1,23 +1,48 @@
-import {flow, types as t} from 'mobx-state-tree';
+import { flow, types as t, getRoot } from 'mobx-state-tree';
 import uuid from 'uuid';
 import Api from '../api';
 
 export const TodoModel = t
     .model('TodoModel', {
-      id: t.identifier,
+      id: t.maybe(t.string),
       text: t.maybe(t.string),
       isCompleted: t.optional(t.boolean, false),
       isImportant: t.optional(t.boolean, false),
-      groupId: t.maybe(t.string)
+      groupId: t.maybe(t.string),
+      sending: false,
+      sendingError: false,
+      createdLocally: false
     })
     .actions(store => ({
+      afterAttach() {
+        if (store.createdLocally) {
+          store.send();
+        }
+      },
+
+      send: flow(function* send() {
+        store.sending = true;
+        store.sendingError = false;
+
+        try {
+          const todo = yield Api.Todos.add(store);
+          todo.sending = false;
+          todo.createdLocally = false;
+
+          getRoot(store).todos.replaceItem(store.id, todo);
+        } catch (err) {
+          console.log(err);
+          store.sendingError = true;
+          store.sending = false;
+        }
+      }),
+
       toggleCompleted: flow(function* toggleCompleted() {
         const oldValue = store.isCompleted;
         store.isCompleted = !store.isCompleted;
 
         try {
           yield Api.Todos.update(store.id,{ isCompleted: store.isCompleted });
-          console.log('success');
         } catch (err) {
           console.log(err);
           store.isCompleted = oldValue;
@@ -30,7 +55,6 @@ export const TodoModel = t
 
         try {
           yield Api.Todos.update(store.id, { isImportant: store.isImportant });
-          console.log('success');
         } catch (err) {
           console.log(err);
           store.isImportant = oldValue;
@@ -42,7 +66,9 @@ export const TodoListModel = t
     .model('TodoListModel', {
       list: t.optional(t.array(TodoModel), []),
       loading: false,
-      error: false
+      error: false,
+      deleting: false,
+      deletingError: false
     })
     .views(store => ({
       get allTodos() {
@@ -86,15 +112,34 @@ export const TodoListModel = t
         const todo = {
           id: uuid(),
           text,
-          groupId
+          groupId,
+          createdLocally: true
         };
 
-        store.list.push(todo);
+        store.list.unshift(todo);
       },
 
-      delete(id) {
-        store.list = store.list.filter(item => item.id !== id);
+      replaceItem(id, todo) {
+        const index = store.list.findIndex(item => id === item.id);
+
+        if (index > -1) {
+          store.list[index] = todo;
+        }
       },
+
+      deleteTodo: flow(function* deleteTodo(id) {
+        store.deleting = true;
+        store.list = store.list.filter(item => item.id !== id);
+
+        try {
+          yield Api.Todos.remove(id);
+        } catch (err) {
+          console.log(err);
+          store.deletingError = true;
+        } finally {
+          store.deleting = false;
+        }
+      }),
 
       deleteGroupTodos(groupId) {
         store.list = store.list.filter(item => item.groupId !== groupId);
